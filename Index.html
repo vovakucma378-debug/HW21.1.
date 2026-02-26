@@ -2,16 +2,20 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>"Royal Maine Coon UA"</title>
+    <title>Royal Maine Coon UA</title>
 </head>
 
 <body>
 <header>
-    <h1>"Royal Maine Coon UA"</h1>
-    <nav>
-        <ul>
-            <li><a href="pages/contact.html">Contact</a></li>
-            <li><a href="pages/gallery.html">Gallery</a></li>
+    <nav class="dashboard" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; background: #f5f5dc;">
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: #2e4d3d; font-size: 20px;">Royal Maine Coon UA</a>
+        </div>
+        <ul style="display: flex; list-style: none; gap: 20px; margin: 0; padding: 0; align-items: center;">
+            <li><a href="index.html" style="text-decoration: none; color: #2e4d3d;">Додому</a></li>
+            <li><a href="pages/gallery.html" style="text-decoration: none; color: #2e4d3d;">Про нас</a></li>
+            <li><a href="pages/contact.html" style="text-decoration: none; color: #2e4d3d;">Контакти</a></li>
+            <li><button onclick="openPopup()" style="cursor: pointer; background: #2e4d3d; color: #f5f5dc; border: none; padding: 7px 15px; border-radius: 4px;">Увійти</button></li>
         </ul>
     </nav>
 </header>
@@ -39,5 +43,111 @@
 <footer>
     <P>@ 2026  Joh Doe</P>
 </footer>
+<div id="authPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 25px; border-radius: 12px; width: 360px; text-align: center; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <span onclick="closePopup()" style="position: absolute; right: 15px; top: 10px; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
+        <h2 id="modalTitle" style="margin-bottom: 20px; font-family: sans-serif;">Увійти</h2>
+
+        <div style="text-align: left; margin-bottom: 10px;">
+            <input type="text" id="userName" placeholder="Ім'я та Прізвище" oninput="validate()" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+            <div id="nameError" style="color: #ff4d4d; font-size: 11px; min-height: 15px; margin-top: 4px; padding-left: 5px;"></div>
+        </div>
+
+        <div id="regOnlyFields" style="display: none; text-align: left; margin-bottom: 10px;">
+            <input type="email" id="userEmail" placeholder="Електронна адреса" oninput="validate()" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+            <div id="emailError" style="color: #ff4d4d; font-size: 11px; min-height: 15px; margin-top: 4px; padding-left: 5px;"></div>
+        </div>
+
+        <div style="text-align: left; margin-bottom: 10px;">
+            <input type="password" id="userPass" placeholder="Пароль" oninput="validate()" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+            <div id="passError" style="color: #ff4d4d; font-size: 11px; min-height: 15px; margin-top: 4px; padding-left: 5px;"></div>
+        </div>
+
+        <div id="confirmFields" style="display: none; text-align: left; margin-bottom: 10px;">
+            <input type="password" id="confirmPass" placeholder="Повторіть пароль" oninput="validate()" style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+            <div id="confirmError" style="color: #ff4d4d; font-size: 11px; min-height: 15px; margin-top: 4px; padding-left: 5px;"></div>
+        </div>
+
+        <button id="mainBtn" onclick="handleAuth()" disabled style="width: 100%; padding: 14px; background: #ccc; color: white; border: none; border-radius: 6px; cursor: not-allowed; font-weight: bold; font-size: 16px; transition: 0.3s;">Увійти</button>
+
+        <p id="switchText" style="margin-top: 20px; font-size: 14px; color: #555; font-family: sans-serif;">
+            Немає аккаунту? <span onclick="toggleMode()" style="color: #007bff; cursor: pointer; text-decoration: underline;">Зареєструватися</span>
+        </p>
+    </div>
+</div>
+
+<script>
+    let isLoginMode = true;
+
+    function openPopup() { document.getElementById('authPopup').style.display = 'flex'; }
+    function closePopup() { document.getElementById('authPopup').style.display = 'none'; resetForm(); }
+
+    function resetForm() {
+        document.querySelectorAll('#authPopup input').forEach(i => i.value = "");
+        document.querySelectorAll('#authPopup div[id$="Error"]').forEach(e => e.innerText = "");
+        validate();
+    }
+
+    function toggleMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('modalTitle').innerText = isLoginMode ? "Увійти" : "Реєстрація";
+        document.getElementById('regOnlyFields').style.display = isLoginMode ? "none" : "block";
+        document.getElementById('confirmFields').style.display = isLoginMode ? "none" : "block";
+        document.getElementById('mainBtn').innerText = isLoginMode ? "Увійти" : "Створити аккаунт";
+        document.getElementById('switchText').innerHTML = isLoginMode ?
+            'Немає аккаунту? <span onclick="toggleMode()" style="color: #007bff; cursor: pointer;">Зареєструватися</span>' :
+            'Вже є аккаунт? <span onclick="toggleMode()" style="color: #007bff; cursor: pointer;">Увійти</span>';
+        validate();
+    }
+
+    function validate() {
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const pass = document.getElementById('userPass').value;
+        const conf = document.getElementById('confirmPass').value;
+        const btn = document.getElementById('mainBtn');
+        let isValid = true;
+
+        const nameRegex = /^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s]{2,20}$/;
+        if (name.length > 0 && !nameRegex.test(name)) {
+            document.getElementById('nameError').innerText = "Від 2 до 20 літер";
+            isValid = false;
+        } else { document.getElementById('nameError').innerText = ""; if(!name) isValid = false; }
+
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+        if (pass.length > 0 && !passRegex.test(pass)) {
+            document.getElementById('passError').innerText = "Мін. 8 знаків (A, a, 1, @)";
+            isValid = false;
+        } else { document.getElementById('passError').innerText = ""; if(!pass) isValid = false; }
+
+        if (!isLoginMode) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email.length > 0 && !emailRegex.test(email)) {
+                document.getElementById('emailError').innerText = "Невірний email";
+                isValid = false;
+            } else { document.getElementById('emailError').innerText = ""; if(!email) isValid = false; }
+
+            if (conf.length > 0 && pass !== conf) {
+                document.getElementById('confirmError').innerText = "Паролі не співпадають";
+                isValid = false;
+            } else { document.getElementById('confirmError').innerText = ""; if(!conf) isValid = false; }
+        }
+
+        btn.disabled = !isValid;
+        btn.style.background = isValid ? "#28a745" : "#ccc";
+        btn.style.cursor = isValid ? "pointer" : "not-allowed";
+    }
+
+    function handleAuth() {
+        const nameValue = document.getElementById('userName').value;
+        localStorage.setItem('profileName', nameValue);
+        // Путь к фото для профиля (из Profile/ к папке photo/)
+        localStorage.setItem('profileImg', '../photo/photo_1_2026-02-19_23-44-27.jpg');
+
+        let isPages = window.location.pathname.includes('pages/');
+        window.location.href = isPages ? "../Profile/profile.html" : "Profile/profile.html";
+
+    }
+</script>
 </body>
 </html>

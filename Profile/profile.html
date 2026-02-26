@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Кабінет | Royal Maine Coon UA</title>
+    <style>
+        /* ДИЗАЙН OLD MONEY (як на твоєму index.html) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f7f6f0;
+            color: #2e4d3d;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+        }
+
+        /* ШАПКА */
+        header {
+            background: #ecebd9;
+            border-bottom: 1px solid #c2c1b5;
+            padding: 0 40px; height: 70px;
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+        .nav-left { display: flex; align-items: center; gap: 30px; }
+        .nav-left a { color: #2e4d3d; text-decoration: none; font-size: 16px; transition: 0.2s; }
+        .nav-left a:hover { color: #5a7d65; }
+        .logo { font-size: 22px !important; font-weight: bold; }
+
+        /* ПРОФІЛЬ В ШАПЦІ (КЛІКАБЕЛЬНИЙ) */
+        .user-profile-btn {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            padding: 5px 10px; border-radius: 30px; transition: 0.2s;
+        }
+        .user-profile-btn:hover { background: #e0dfd3; }
+        .user-profile-btn img {
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #c2c1b5;
+        }
+        .user-profile-btn span { font-size: 16px; font-weight: bold; }
+
+        /* ОСНОВНА ЧАСТИНА */
+        .wrapper { display: flex; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; overflow: hidden; }
+
+        /* САЙДБАР */
+        .sidebar {
+            width: 260px; padding: 40px 20px 20px 0; border-right: 1px solid #e0dfd3;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .sidebar button {
+            background: none; border: none; text-align: left; padding: 12px 15px;
+            font-family: inherit; font-size: 18px; color: #2e4d3d; cursor: pointer;
+            border-left: 3px solid transparent; transition: 0.2s;
+        }
+        .sidebar button:hover { color: #000000; background: rgb(46, 67, 52); }
+        .sidebar button.active { color: #000000; font-weight: bold; border-left-color: #2e4334; }
+
+        .btn-exit {
+            margin-top: auto; background: none; border: none; text-align: left;
+            padding: 12px 15px; font-family: inherit; font-size: 16px; color: #a33;
+            cursor: pointer; text-decoration: none; transition: 0.2s;
+        }
+        .btn-exit:hover { text-decoration: underline; background: rgba(170, 51, 51, 0.05); }
+
+        /* КОНТЕНТ */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
+        h2 { font-weight: normal; font-size: 28px; margin-bottom: 30px; border-bottom: 1px solid #e0dfd3; padding-bottom: 15px; }
+
+        /* МАГАЗИН */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .card { background: #fff; border: 1px solid #e0dfd3; padding: 15px; text-align: center; }
+        .card img { width: 100%; height: 240px; object-fit: cover; margin-bottom: 15px; }
+        .card h3 { font-size: 18px; font-weight: normal; margin-bottom: 5px; }
+        .price { font-size: 18px; color: #2e4334; margin: 15px 0; font-weight: bold; }
+        .btn { background: #2e4334; color: #fff; border: none; padding: 12px; font-family: inherit; cursor: pointer; width: 100%; font-size: 15px; }
+        .btn:hover { background: #1e2c22; }
+
+        /* ПАСПОРТ (БЕЗ ПЕЧАТКИ) */
+        .passport-box {
+            background: #fff; border: 1px solid #c2c1b5; padding: 30px;
+            max-width: 600px; display: flex; gap: 30px;
+        }
+        .passport-box img { width: 180px; height: 180px; object-fit: cover; border: 1px solid #e0dfd3; }
+        .pass-info h3 { font-weight: normal; font-size: 20px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .pass-info p { font-size: 16px; margin-bottom: 10px; font-family: sans-serif; color: #333; }
+
+        /* ФОРМА РЕДАГУВАННЯ */
+        .edit-form { max-width: 400px; display: flex; flex-direction: column; gap: 20px; }
+        .edit-form label { font-size: 15px; color: #555; margin-bottom: -15px; }
+        .edit-form input { padding: 12px; border: 1px solid #c2c1b5; font-family: inherit; font-size: 15px; }
+
+        /* МОДАЛКА */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); align-items:center; justify-content:center; }
+        .modal-box { background: #f7f6f0; padding: 30px; border: 1px solid #c2c1b5; text-align: center; width: 350px; }
+        .modal-box input { width: 100%; padding: 10px; margin: 20px 0; border: 1px solid #ccc; font-family: inherit; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-left">
+        <a href="../index.html" class="logo">Royal Maine Coon UA</a>
+        <a href="../pages/gallery.html">Про нас</a>
+        <a href="../pages/contact.html">Контакти</a>
+    </div> <div class="user-profile-btn" onclick="showTab('edit')">
+    <img id="header-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Аватар">
+    <span id="header-name">Гість</span>
+    </div>
+</header>
+
+<div class="wrapper">
+    <aside class="sidebar">
+        <button id="btn-shop" class="active" onclick="showTab('shop')">Оберіть котика</button>
+        <button id="btn-mypet" onclick="showTab('mypet')">Ваш вихованець</button>
+        <button id="btn-edit" onclick="showTab('edit')">Редагування профілю</button>
+
+        <a href="../index.html" class="btn-exit" onclick="logout()">Вийти з акаунту</a>
+    </aside>
+
+    <main class="main-content">
+
+        <section id="shop" class="section active">
+            <h2>Доступні кошенята</h2>
+            <div class="grid" id="market-grid"></div>
+        </section>
+
+        <section id="mypet" class="section">
+            <h2>Паспорт вихованця</h2>
+            <div id="pet-output">
+                <p style="color: #777; font-style: italic;">Ви ще не придбали вихованця.</p>
+            </div>
+        </section>
+        <section id="edit" class="section">
+            <h2>Редагування профілю</h2>
+            <div class="edit-form">
+                <label>Ім'я профілю:</label>
+                <input type="text" id="edit-name" placeholder="Введіть нове ім'я">
+
+                <label>Завантажити фото з комп'ютера:</label>
+                <input type="file" id="edit-photo-file" accept="image/*" style="margin-bottom: 20px; display: block;">
+
+                <button class="btn" onclick="saveProfile()">Зберегти зміни</button>
+                <p id="save-msg" style="color: green; display: none;">Дані збережено!</p>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div id="buyModal" class="modal">
+    <div class="modal-box">
+        <h3 style="font-weight: normal;">Як назвете котика?</h3>
+        <input type="text" id="catNick" placeholder="Введіть кличку">
+        <button class="btn" onclick="confirmBuy()">Придбати</button>
+    </div>
+</div>
+
+<script>
+    const cats=[
+        { n: "Чорний сріблястий мармуровий", a: "2 роки",   i: "../photo/photo_2_2026-02-19_23-44-27.jpg" },
+        { n: "Блакитний димчастий",  a: "1.5 роки", i: "../photo/photo_6_2026-02-19_23-44-27.jpg" },
+        { n: "Браун мармуровий",     a: "3 роки",   i: "../photo/photo_1_2026-02-19_23-44-27.jpg" },
+        { n: "Світло-срібний Кун",  a: "1 рік",    i: "../photo/photo_3_2026-02-19_23-44-27.jpg" },
+        { n: "Чорний черепаховий мармур",     a: "2.5 роки", i: "../photo/photo_4_2026-02-19_23-44-27.jpg" },
+        { n: "Чорний мармуровий з білим",  a: "4 роки",   i: "../photo/photo_5_2026-02-19_23-44-27.jpg" },
+    ];
+
+    // Рендер магазину
+    const grid = document.getElementById('market-grid');
+    let selectedCat = null;
+
+    cats.forEach((c, idx) => {
+        grid.innerHTML += `
+                <div class="card">
+                    <img src="${c.i}" alt="Кіт"onerror="this.src='https://via.placeholder.com/300x240?text=Немає+фото'">
+                    <h3>${c.n}</h3>
+                    <p style="color:#666; font-family:sans-serif;">Вік: ${c.a}</p>
+                    <p class="price">10,000 грн</p>
+                    <button class="btn" onclick="openBuy(${idx})">Купити</button>
+                </div>`;
+    });
+
+    // Перемикання вкладок
+    function showTab(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
+
+        document.getElementById(id).classList.add('active');
+        if(document.getElementById('btn-' + id)) {
+            document.getElementById('btn-' + id).classList.add('active');
+        }
+    }
+
+    // Купівля
+    function openBuy(idx) {
+        selectedCat = cats[idx];
+        document.getElementById('buyModal').style.display = 'flex';
+    }
+
+    function confirmBuy() {
+        const nick = document.getElementById('catNick').value || "Без імені";
+        const petData = { nick, breed: selectedCat.n, img: selectedCat.i, age: selectedCat.a };
+
+        localStorage.setItem('myRealPet', JSON.stringify(petData));
+        renderPassport();
+
+        document.getElementById('buyModal').style.display = 'none';
+        document.getElementById('catNick').value = "";
+        showTab('mypet'); // Перекидає у вкладку вихованця
+    }
+
+    // Рендер паспорта (ЯКЩО ПУСТО - НІЧОГО НЕ ПОКАЗУЄ)
+    function renderPassport() {
+        const saved = localStorage.getItem('myRealPet');
+        if(saved) {
+            const data = JSON.parse(saved);
+            document.getElementById('pet-output').innerHTML = `
+                    <div class="passport-box">
+                        <img src="${data.img}" alt="Ваш кіт">
+                        <div class="pass-info">
+                            <h3>ВЕТЕРИНАРНИЙ ПАСПОРТ</h3>
+                            <p><strong>Кличка:</strong> ${data.nick}</p>
+                            <p><strong>Порода:</strong> ${data.breed}</p>
+                            <p><strong>Вік:</strong> ${data.age}</p>
+                            <br>
+                            <p style="color: #2e4334; font-weight: bold;">Щеплення: зроблені ✅</p>
+                        </div>
+                    </div>`;
+        } else {
+            document.getElementById('pet-output').innerHTML = '<p style="color: #777; font-style: italic;">Ви ще не придбали вихованця.</p>';
+        }
+    }
+
+    // Збереження профілю
+    function saveProfile() {
+        const name = document.getElementById('edit-name').value;
+        const photo = document.getElementById('edit-photo').value;
+
+        if(name) {
+            localStorage.setItem('profileName', name);
+            document.getElementById('header-name').innerText = name;
+        }
+        if(photo) {
+            localStorage.setItem('profileImg', photo);
+            document.getElementById('header-img').src = photo;
+        }
+
+        document.getElementById('save-msg').style.display = 'block';
+        setTimeout(() => document.getElementById('save-msg').style.display = 'none', 2000);
+    }
+
+    // Завантаження даних при відкритті сторінки
+    window.onload = function() {
+        renderPassport(); // Перевіряє, чи є кіт.Якщо ні - залишає пусто
+
+        if(localStorage.getItem('profileName')) {
+            document.getElementById('header-name').innerText = localStorage.getItem('profileName');
+            document.getElementById('edit-name').value = localStorage.getItem('profileName');
+        }
+        if(localStorage.getItem('profileImg')) {
+            document.getElementById('header-img').src = localStorage.getItem('profileImg');
+            document.getElementById('edit-photo').value = localStorage.getItem('profileImg');
+        }
+    };
+
+    function logout() {
+        // За бажанням можна чистити пам'ять при виході: localStorage.clear();
+    }
+</script>
+<script>
+    // 1. КОГДА СТРАНИЦА ЗАГРУЖАЕТСЯ
+    window.onload = function() {
+        // ТВОИ КОТЫ — ОСТАВЛЯЕМ, ЭТО СВЯТОЕ
+        if (typeof renderPassport === "function") {
+            renderPassport();
+        }
+
+        // Подтягиваем имя и аватарку из памяти, чтобы они светились в углу
+        const savedName = localStorage.getItem('profileName');
+        const savedImg = localStorage.getItem('profileImg');
+
+        if (savedName) {
+            document.getElementById('header-name').innerText = savedName;
+            if(document.getElementById('edit-name')) {
+                document.getElementById('edit-name').value = savedName;
+            }
+        }
+
+        if (savedImg) {
+            document.getElementById('header-img').src = savedImg;
+        }
+    };
+
+    // 2. ФУНКЦИЯ СОХРАНЕНИЯ (Обновленная под файлы, коты не пострадают)
+    function saveProfile() {
+        const nameInput = document.getElementById('edit-name').value;
+        const fileInput = document.getElementById('edit-photo-file'); // Это наша новая кнопка
+        const file = fileInput.files[0]; // Берем файл, который ты выбрал с компа
+
+        // Сохраняем имя
+        if (nameInput) {
+            localStorage.setItem('profileName', nameInput);
+            document.getElementById('header-name').innerText = nameInput;
+        }
+
+        // Если файл выбран — читаем его и превращаем в картинку
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const base64Image = e.target.result; // Это код твоей фотки
+                localStorage.setItem('profileImg', base64Image); // Сейвим в память
+                document.getElementById('header-img').src = base64Image; // Меняем аватарку в углу
+            };
+
+            reader.readAsDataURL(file); // Запускаем читалку
+        }
+
+        // Показываем надпись "Дані збережено"
+        const msg = document.getElementById('save-msg');
+        if (msg) {
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 2000);
+        }
+    }
+
+    // 3. ТВОЙ ВЫХОД ИЗ АККАУНТА (Тоже оставляем)
+    function logout() {
+        // localStorage.clear(); // Если хочешь чистить всё при выходе, убери две палки слева
+        window.location.href = "../index.html";
+    }
+</script>
+</body>
+</html>
